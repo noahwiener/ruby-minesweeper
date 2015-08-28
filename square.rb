@@ -2,7 +2,7 @@ require_relative 'board'
 
 class Square
   NEIGHBORS = [[0,1], [1,1], [1,0], [-1, 0], [-1, -1], [0, -1], [1, -1], [-1, 1]]
-  attr_accessor :is_bomb, :clicked, :flagged, :board
+  attr_accessor :is_bomb, :revealed, :flagged, :board
   attr_reader :position
 
   def initialize(position)
@@ -14,6 +14,11 @@ class Square
 
   def reveal
     self.revealed = true
+    if is_bomb
+      board.bomb_revealed = true
+    elsif neighbor_bomb_count == 0
+      neighbors.each { |neighbor| neighbor.reveal unless neighbor.revealed }
+    end
   end
 
   def flag
@@ -43,13 +48,29 @@ class Square
   end
 
   def neighbor_bomb_count
-    
+    count = 0
+    neighbors.each do |neighbor|
+      count += 1 if neighbor.is_bomb
+    end
+    count
   end
 
   def inspect
     {:position => position, :is_bomb => is_bomb}.to_s
   end
 
-
+  def to_s
+    if board.bomb_revealed
+      "!"
+    elsif revealed && neighbor_bomb_count == 0
+      "_"
+    elsif revealed
+      neighbor_bomb_count.to_s
+    elsif flagged
+      "F"
+    else
+      "*"
+    end
+  end
 
 end

@@ -1,10 +1,11 @@
 require_relative 'square'
 
 class Board
-  attr_accessor :grid
+  attr_accessor :grid, :bomb_revealed
 
   def initialize(size = 9)
     build_board(size)
+    @bomb_revealed = false
   end
 
   def build_board(size)
@@ -32,10 +33,28 @@ class Board
     end
   end
 
-  # def display
-  #   grid.each do |row|
-  #   end
-  # end
+  def display
+    grid.each do |row|
+      row.each do |el|
+        print el.to_s
+      end
+      print "\n"
+    end
+    true
+  end
+
+  def bomb_revealed?
+    @bomb_revealed
+  end
+
+
+  def reveal(pos)
+    self[pos].reveal
+  end
+
+  def flag(pos)
+    self[pos].flag
+  end
 
   def [](pos)
     grid[pos[0]][pos[1]]
