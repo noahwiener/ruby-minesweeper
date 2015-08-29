@@ -1,5 +1,6 @@
 require_relative 'square'
 require_relative 'board'
+require 'yaml'
 
 class MineSweeper
   attr_accessor :board
@@ -34,6 +35,8 @@ class MineSweeper
   def play_turn
     puts "what would you like to do? Enter 'save' or an answer in the form of 'r/f, num, num' "
     move = gets.chomp.split(", ")
+    save if move[0] == "save"
+
     pos = [move[1].to_i, move[2].to_i]
     if move[0] == "f"
       flag(pos)
@@ -54,4 +57,19 @@ class MineSweeper
     board.display
   end
 
+  def save
+    saved_game = gets.chomp
+    File.write(saved_game, self.to_yaml)
+    Kernel.abort("Game saved!")
+  end
+
+end
+
+if __FILE__ == $PROGRAM_NAME
+  if ARGV[0]
+    YAML.load_file(ARGV.shift).play
+  else
+    game = MineSweeper.new
+    game.play
+  end
 end
